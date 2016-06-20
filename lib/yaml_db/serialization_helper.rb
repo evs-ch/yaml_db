@@ -85,10 +85,11 @@ module YamlDb
         if column_names.nil?
           return
         end
+        columns = column_names.map{|cn| ActiveRecord::Base.connection.columns(table).detect{|c| c.name == cn}}
         quoted_column_names = column_names.map { |column| ActiveRecord::Base.connection.quote_column_name(column) }.join(',')
         quoted_table_name = Utils.quote_table(table)
         records.each do |record|
-          quoted_values = record.map{|c| ActiveRecord::Base.connection.quote(c)}.join(',')
+          quoted_values = record.zip(columns).map{|c| ActiveRecord::Base.connection.quote(c.first, c.last)}.join(',')
           ActiveRecord::Base.connection.execute("INSERT INTO #{quoted_table_name} (#{quoted_column_names}) VALUES (#{quoted_values})")
         end
       end
@@ -165,7 +166,12 @@ module YamlDb
       end
 
       def self.tables
-        ActiveRecord::Base.connection.tables.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }.sort
+        response = ActiveRecord::Base.connection.tables.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }
+        excludes = JSON.parse(ENV["exclude"]) || []
+        excludes.each do |exclude|
+          response.delete(exclude)
+        end
+        return response
       end
 
       def self.dump_table(io, table)
