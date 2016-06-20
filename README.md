@@ -32,8 +32,8 @@ In addition, we have plugins whereby you can export your database to/from variou
 
 ## Optional parameters
 
-    dir='some_directory_name'           ->  Specify the name of the target dump directory
-    exclude=[\"table_1\", \"table_2\"]  ->  Specify tables in JSON array format to exclude
+    dir='some_directory_name'  ->  Specify the name of the target dump directory
+    exclude="table_1,table_2"  ->  Specify tables in comma delimited format to exclude
 
 ## Examples
 

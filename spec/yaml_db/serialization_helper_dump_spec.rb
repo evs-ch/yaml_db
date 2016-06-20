@@ -62,7 +62,7 @@ module YamlDb
       end
 
       it 'does not dump table that is excluded' do
-        stub_const('ENV', 'exclude' => '["mytable"]')
+        stub_const('ENV', 'exclude' => "mytable")
         expect(Dump.tables).to eq([])
       end
 

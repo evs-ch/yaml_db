@@ -167,11 +167,8 @@ module YamlDb
 
       def self.tables
         response = ActiveRecord::Base.connection.tables.reject { |table| ['schema_info', 'schema_migrations'].include?(table) }
-        excludes = JSON.parse( ENV["exclude"] || "[]" )
-        excludes.each do |exclude|
-          response.delete(exclude)
-        end
-        return response
+        excludes = ( ENV["exclude"] || "" ).split(",")
+        return (response - excludes)
       end
 
       def self.dump_table(io, table)
