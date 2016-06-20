@@ -61,6 +61,11 @@ module YamlDb
         Dump.dump_table(@io, 'mytable')
       end
 
+      it 'does not dump table that is excluded' do
+        stub_const('ENV', 'exclude' => '["mytable"]')
+        expect(Dump.tables).to eq([])
+      end
+
       describe ".tables" do
         it "returns a list of tables without the rails schema table" do
           expect(Dump.tables).to eq(['mytable'])
