@@ -73,12 +73,15 @@ module YamlDb
       end
 
       def self.load_table(table, data, truncate = true)
+        ActiveRecord::Base.connection.execute("ALTER TABLE #{Utils.quote_table(table)} DISABLE TRIGGER ALL")
+        # rescue Exception
         column_names = data['columns']
         if truncate
           truncate_table(table)
         end
         load_records(table, column_names, data['records'])
         reset_pk_sequence!(table)
+        ActiveRecord::Base.connection.execute("ALTER TABLE #{Utils.quote_table(table)} ENABLE TRIGGER ALL")
       end
 
       def self.load_records(table, column_names, records)
